@@ -1,6 +1,5 @@
 
-var accIds = 0;
-var accClass = 0;
+
 var counter = 0;
 
 
@@ -9,7 +8,8 @@ var counter = 0;
 
 
 function submitItem(){
-    var currentDiv = document.getElementById('simpleList').childNodes[0];
+    var childNodesList = document.getElementById('simpleList').childNodes
+    var currentDiv = childNodesList[childNodesList.length-1];
     if(!currentDiv.getElementsByTagName('p')[0].innerHTML){alert("There's no text");return;} 
     if(currentDiv.getElementsByTagName('img')[0].src == ""){ alert("There's no image");return;} 
     document.getElementById('divAddItem').style.visibility = 'visible';
@@ -24,20 +24,22 @@ function submitItem(){
         src: currentDiv.getElementsByTagName('img')[0].src
     };
     
-    let divs = JSON.parse(localStorage.getItem('divs'));
+    var divs = JSON.parse(localStorage.getItem('divs'));
     divs.push(newDiv);
 
     localStorage.setItem('divs', JSON.stringify(divs));
     
     document.getElementById('counterDiv').innerHTML = parseInt(localStorage.getItem('counter'))+1;
     localStorage.setItem('counter', document.getElementById('counterDiv').innerHTML);
+
 }
 
 function editItem(){
     var currentDiv = event.target.parentElement;
-    currentDiv.setAttribute('class','class'+accClass);
-    document.getElementById('fileEdit').setAttribute("class","class"+accClass);
-    accClass++;
+    var currentAccClass = localStorage.getItem('accClass');
+    currentDiv.setAttribute('class','class'+currentAccClass);
+    document.getElementById('fileEdit').setAttribute("class","class"+currentAccClass);
+    localStorage.setItem('accClass',parseInt(currentAccClass)+1);
 
     var newText = prompt("New Text: ");
     while(newText.length > 300){
@@ -73,15 +75,14 @@ function addText(){
             text = prompt("Text: ");
         }
     }
-    document.getElementById('simpleList').childNodes[0].getElementsByTagName('p')[0].innerHTML = text;
+    var childNodesList = document.getElementById('simpleList').childNodes
+    childNodesList[childNodesList.length-1].getElementsByTagName('p')[0].innerHTML = text;
 }
 
 function createDiv(){
     var newDiv = document.createElement('div');
     newDiv.setAttribute('id','div1');
     newDiv.setAttribute('class','list-group-item');
-    newDiv.setAttribute('id', 'divItem'+accIds);
-    accIds++;
 
 
     var newImg = document.createElement('img');
@@ -121,10 +122,15 @@ function createDiv(){
 function addItem(){
     
     var newDiv = createDiv();
-
-    document.getElementById('simpleList').insertBefore(newDiv,document.getElementById('simpleList').childNodes[0]);
+    var currentAccIds = localStorage.getItem('accIds');
+    
+    
+    newDiv.setAttribute('id', 'divItem'+currentAccIds);
+    document.getElementById('simpleList').appendChild(newDiv);
     document.getElementById('divAddItem').style.visibility = 'hidden';
     document.getElementById('divButtons').style.visibility = 'visible';
+    localStorage.setItem('accIds',parseInt(currentAccIds)+1);
+
 
 }
 
@@ -152,13 +158,14 @@ function deleteItem(){
 
 function handleEdit(file){
     if(file){
+        var reader = new FileReader();
+        reader.readAsDataURL(file[0]);
         var currentClass = event.target.className;
         var currentDiv = document.getElementsByClassName(currentClass)[1];
         var img = currentDiv.getElementsByTagName('img')[0];
-        img.src = window.URL.createObjectURL(file[0]);       
-        img.onload = function() {
-            window.URL.revokeObjectURL(this.src);
-          }
+        reader.onloadend = function() {
+            img.src = reader.result;
+        
         var divList = JSON.parse(localStorage.getItem('divs'));
         for (var i=0; i<divList.length; i++){
             if(divList[i].id == currentDiv.id) {
@@ -166,7 +173,9 @@ function handleEdit(file){
                 break;
             }
         }
+    
         localStorage.setItem('divs',JSON.stringify(divList));
+        }
     }
 }
 
@@ -174,7 +183,8 @@ function handleFiles(files) {
      if(files){
         var reader = new FileReader();
         reader.readAsDataURL(files[0]);
-        var currentDiv = document.getElementById('simpleList').childNodes[0];
+        var childNodesList = document.getElementById('simpleList').childNodes;
+        var currentDiv = childNodesList[childNodesList.length-1];
         reader.onloadend = function() {
             currentDiv.getElementsByTagName('img')[0].src = reader.result;
         }                     
@@ -190,8 +200,10 @@ function load_localstorage(){
 
         for (var i = 0; i < divList.length; i++){
             var newDiv = createDiv();
+            newDiv.setAttribute('id',divList[i].id);
             newDiv.getElementsByTagName('p')[0].innerHTML = divList[i].text;
-            newDiv.getElementsByTagName('img')[0].src = (divList[i].src);
+            newDiv.getElementsByTagName('img')[0].src = divList[i].src;
+            
             document.getElementById('simpleList').appendChild(newDiv);
             newDiv.getElementsByTagName("input")[0].style.visibility = 'visible'; // the edit button is the first input appended
             newDiv.getElementsByTagName("input")[1].style.visibility = 'visible'; // the delete button is the second input appended
@@ -200,6 +212,8 @@ function load_localstorage(){
     }else{
         localStorage.setItem('divs',"[]");
         localStorage.setItem('counter',0);
+        localStorage.setItem('accIds',0);
+        localStorage.setItem('accClass',0);
     }    
 }
 
@@ -209,9 +223,9 @@ Sortable.create(simpleList, {
         var childNodesList = document.getElementById('simpleList').childNodes;
         var arr = [];   
 
-        for (var i = 0; i < document.getElementById('simpleList').childNodes.length ; i++){
+        for (var i = 0; i < childNodesList.length ; i++){
             if (childNodesList[i].nodeType !== Node.ELEMENT_NODE) continue;
-            let newDiv = {
+            var newDiv = {
                 id: childNodesList[i].id,
                 src: childNodesList[i].getElementsByTagName('img')[0].src,
                 text: childNodesList[i].getElementsByTagName('p')[0].innerHTML
@@ -236,7 +250,6 @@ fileSelect.addEventListener("click", function (e) {
 }, false);
 
 window.onload = load_localstorage();
-
 
 
 
