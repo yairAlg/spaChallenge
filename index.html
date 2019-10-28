@@ -1,38 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
 <style>
-#div1 {
-  width: 350px;
-  height: 120px;
-  padding: 10px;
-  border: 1px solid #aaaaaa;
-}   
+body {
+  background-image: url("https://cdn.pixabay.com/photo/2017/07/13/13/28/paper-2500380_960_720.jpg");
+  
+}
+
 #counterDiv {
-  width: 10px;
-  height: 15px;
+  width: 50px;
+  height: 50px;
   padding: 10px;
+  margin-left: 800px;
   border:  2px solid black;
 } 
 </style>
 
-<title> SPA2 </title>
+<title> SPACHALLENGE </title>
     
-<meta charset="utf-8">
 
 </head>
 <body>
 
     <div id = "counterDiv">0</div>  
 
-    <div id="divAddItem"><input type="button" value="Add Item" onclick="addItem()"></div>
+    <div id="divAddItem"><input type="button" value="Add Item" class="btn btn-primary" onclick="addItem()"></div>
     <div id="divButtons">
         <input type="file" id="fileEdit" accept="image/*" style="display: none;" onchange="handleEdit(this.files)">
         <input type="file" id="fileElem" accept="image/*" style="display: none;" onchange="handleFiles(this.files)">
         <a href="#" id="fileSelect">Upload Image</a>
-        <input type="button" value="Add Text" onclick="addText()">
-        <input type="button" value="Submit" onclick="submitItem()">
+        <input type="button" value="Add Text" class="btn btn-secondary" onclick="addText()">
+        <input type="button" value="Submit" class="btn btn-success" onclick="submitItem()">
     </div>
     <div id="simpleList" class="list-group">
     

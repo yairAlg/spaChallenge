@@ -3,13 +3,11 @@
 var counter = 0;
 
 
-// chequear el funcionamiento del edit, delete, y casos generales
-
 
 
 function submitItem(){
     var childNodesList = document.getElementById('simpleList').childNodes
-    var currentDiv = childNodesList[childNodesList.length-1];
+    var currentDiv = childNodesList[childNodesList.length-1]; // as I appended the current div I know its the last element of childNodesList
     if(!currentDiv.getElementsByTagName('p')[0].innerHTML){alert("There's no text");return;} 
     if(currentDiv.getElementsByTagName('img')[0].src == ""){ alert("There's no image");return;} 
     document.getElementById('divAddItem').style.visibility = 'visible';
@@ -83,6 +81,9 @@ function createDiv(){
     var newDiv = document.createElement('div');
     newDiv.setAttribute('id','div1');
     newDiv.setAttribute('class','list-group-item');
+    newDiv.style.marginTop = "30px";
+    newDiv.style.border = "1px solid black";
+    newDiv.style.backgroundColor = "transparent";
 
 
     var newImg = document.createElement('img');
@@ -98,6 +99,7 @@ function createDiv(){
     newEdit.setAttribute("onclick","editItem()");
     newEdit.style.marginLeft = "270px";
     newEdit.style.visibility = "hidden";
+    newEdit.setAttribute('class',"btn btn-info");
     newEdit.addEventListener("click", function (e) {
         if (fileEdit) {
           fileEdit.click();
@@ -110,6 +112,7 @@ function createDiv(){
     var newDelete = document.createElement("input");
     newDelete.setAttribute("type","button");
     newDelete.setAttribute("value","Delete Item");
+    newDelete.setAttribute("class","btn btn-dark");
     newDelete.style.marginLeft = "270px";
     newDelete.style.marginTop = "20px";
     newDelete.setAttribute('onclick','deleteItem()');
@@ -165,7 +168,7 @@ function handleEdit(file){
         var img = currentDiv.getElementsByTagName('img')[0];
         reader.onloadend = function() {
             img.src = reader.result;
-        
+        //Edit the localStorage array 
         var divList = JSON.parse(localStorage.getItem('divs'));
         for (var i=0; i<divList.length; i++){
             if(divList[i].id == currentDiv.id) {
@@ -197,7 +200,7 @@ function load_localstorage(){
         document.getElementById('counterDiv').innerHTML = localStorage.getItem('counter'); 
     
         var divList = JSON.parse(localStorage.getItem('divs'));
-
+        //Reconstruction 
         for (var i = 0; i < divList.length; i++){
             var newDiv = createDiv();
             newDiv.setAttribute('id',divList[i].id);
@@ -222,7 +225,7 @@ Sortable.create(simpleList, {
     onEnd: function(ev) {
         var childNodesList = document.getElementById('simpleList').childNodes;
         var arr = [];   
-
+        //Every time the drag and drop list is changed a new elements array is set at the localStorage
         for (var i = 0; i < childNodesList.length ; i++){
             if (childNodesList[i].nodeType !== Node.ELEMENT_NODE) continue;
             var newDiv = {
